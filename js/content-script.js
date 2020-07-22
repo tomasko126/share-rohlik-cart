@@ -33,7 +33,9 @@ class Cart {
             return false;
         }
 
-        return JSON.parse(url.searchParams.get('insertToCart'));
+        const products = url.searchParams.get('insertToCart');
+
+        return JSON.parse(products);
     }
 
     // Add products to cart
