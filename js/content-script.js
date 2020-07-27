@@ -72,7 +72,7 @@ class Cart {
         const urlToShare = new URL('https://rohlik.cz');
         urlToShare.searchParams.set('insertToCart', productIds);
 
-        return decodeURIComponent(urlToShare);
+        return urlToShare;
     }
 
     // Retrieve items in cart by fetching the API
