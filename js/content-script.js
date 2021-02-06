@@ -12,9 +12,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 class Cart {
-
     static #cart = null;
-    static ROHLIK_URL = 'https://www.rohlik.cz/services/frontend-service/v2/cart';
+    static #ROHLIK_URL = 'https://www.rohlik.cz/services/frontend-service/v2/cart';
 
     static getInstance() {
         if (!this.#cart) {
@@ -22,6 +21,29 @@ class Cart {
         }
 
         return this.#cart;
+    }
+
+    // Retrieve items in cart by fetching the API
+    async #retrieveItemsInCart() {
+        try {
+            const response = await fetch(Cart.#ROHLIK_URL);
+
+            if (!response.ok) {
+                throw new Error('Unable to load cart!');
+            }
+
+            const data = await response.json();
+
+            // Object containing key -> value, where key is ID of the product and value its quantity
+            const obj = {};
+            for (const [key, value] of Object.entries(data?.data?.items)) {
+                obj[key] = value.quantity;
+            }
+
+            return JSON.stringify(obj);
+        } catch (e) {
+            throw new Error(e);
+        }
     }
 
     // Parse products and their quantity from URL
@@ -43,7 +65,7 @@ class Cart {
         const promises = [];
 
         for (const [prodId, quantity] of Object.entries(products)) {
-            const request = await fetch(Cart.ROHLIK_URL, {
+            const request = await fetch(Cart.#ROHLIK_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -52,9 +74,8 @@ class Cart {
                     {
                         "productId": prodId,
                         "quantity": quantity,
-                        "source": "true:Front:ProductPersonalSalesHP:default-product-basketForm",
                         "actionId": null,
-                        "recipeId": null
+                        "recipeId": null,
                     }
                 )
             });
@@ -67,35 +88,12 @@ class Cart {
 
     // Generate sharable cart link
     async generateCartLink() {
-        const productIds = await this.retrieveItemsInCart();
+        const productIds = await this.#retrieveItemsInCart();
 
         const urlToShare = new URL('https://rohlik.cz');
         urlToShare.searchParams.set('insertToCart', productIds);
 
         return urlToShare;
-    }
-
-    // Retrieve items in cart by fetching the API
-    async retrieveItemsInCart() {
-        try {
-            const response = await fetch(Cart.ROHLIK_URL);
-
-            if (!response.ok) {
-                throw new Error('Unable to load cart!');
-            }
-
-            const data = await response.json();
-
-            // Object containing key -> value, where key is ID of the product and value its quantity
-            const obj = {};
-            for (const [key, value] of Object.entries(data?.data?.items)) {
-                obj[key] = value.quantity;
-            }
-
-            return JSON.stringify(obj);
-        } catch (e) {
-            throw new Error(e);
-        }
     }
 
     // Delete appended parameter from URL and reload the page
@@ -109,7 +107,7 @@ class Cart {
 }
 
 // Onload handler
-window.onload = async (e) => {
+window.onload = async () => {
     const cart = Cart.getInstance();
     const products = cart.parseProductsFromURL();
 
