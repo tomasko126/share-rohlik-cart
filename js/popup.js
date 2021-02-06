@@ -4,6 +4,7 @@ class Popup {
     static #LOADING_ID = 'loading';
     static #NO_PRODUCTS_IN_CART_ID = 'noproductsincart';
     static #SWITCH_TO_RIGHT_TAB_ID = 'switchtotab';
+    static #COPIED_TO_CLIPBOARD_ID = 'copiedtoclipboard';
 
     static #popup = null;
 
@@ -29,6 +30,7 @@ class Popup {
             if (!content) {
                 document.getElementById(Popup.#SWITCH_TO_RIGHT_TAB_ID).style.display = 'block';
                 document.getElementById(Popup.#SHARE_BTN_ID).remove();
+                return;
             }
 
             // Display all products in cart
@@ -43,6 +45,19 @@ class Popup {
             // Attach click handler to the share button
             shareButton.onclick = async () => {
                 await this.#generateLink();
+
+                // Show message, that the link has been created and copied to user's clipboard
+                const copiedToClipboardMessageElem = document.getElementById(Popup.#COPIED_TO_CLIPBOARD_ID);
+                const shareButton = document.getElementById(Popup.#SHARE_BTN_ID);
+
+                copiedToClipboardMessageElem.style.display = 'block';
+                shareButton.style.display = 'none';
+
+                // Let the message disappear in 5 secs
+                setTimeout(() => {
+                    copiedToClipboardMessageElem.style.display = 'none';
+                    shareButton.style.display = 'block';
+                }, 4000);
             }
 
             // Enable share button
@@ -93,8 +108,6 @@ class Popup {
         urlToShare.searchParams.set('insertToCart', productsIds);
 
         await navigator.clipboard.writeText(urlToShare);
-
-        console.log('URL has been generated!');
     }
 
     /**

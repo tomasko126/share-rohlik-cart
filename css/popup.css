@@ -11,7 +11,7 @@ h1 {
     margin: 0;
 }
 
-#noproductsincart, #switchtotab {
+#noproductsincart, #switchtotab, #copiedtoclipboard {
     display: none;
     text-align: center;
 }
@@ -40,4 +40,8 @@ ol {
 
 li {
     list-style-type: none;
+}
+
+#copiedtoclipboard {
+    margin: 0;
 }
