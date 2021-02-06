@@ -1,10 +1,10 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'generateLink') {
+    if (message.action === 'getCartContent') {
         // We have to wrap the await method in the anon. fn,
         // in order to have async messaging working
         (async () => {
-            const link = await Cart.getInstance().generateCartLink();
-            sendResponse(link);
+            const products = await Cart.getInstance().retrieveProductsInCart();
+            sendResponse(products);
         })();
     }
 
@@ -23,27 +23,17 @@ class Cart {
         return this.#cart;
     }
 
-    // Retrieve items in cart by fetching the API
-    async #retrieveItemsInCart() {
-        try {
-            const response = await fetch(Cart.#ROHLIK_URL);
+    // Retrieve products in cart by fetching the API
+    async retrieveProductsInCart() {
+        const response = await fetch(Cart.#ROHLIK_URL);
 
-            if (!response.ok) {
-                throw new Error('Unable to load cart!');
-            }
-
-            const data = await response.json();
-
-            // Object containing key -> value, where key is ID of the product and value its quantity
-            const obj = {};
-            for (const [key, value] of Object.entries(data?.data?.items)) {
-                obj[key] = value.quantity;
-            }
-
-            return JSON.stringify(obj);
-        } catch (e) {
-            throw new Error(e);
+        if (!response.ok) {
+            throw new Error('Unable to load cart!');
         }
+
+        const data = await response.json();
+
+        return data?.data ?? [];
     }
 
     // Parse products and their quantity from URL
@@ -72,9 +62,9 @@ class Cart {
                 },
                 body: JSON.stringify(
                     {
-                        "productId": prodId,
-                        "quantity": quantity,
                         "actionId": null,
+                        "productId": prodId,
+                        "quantity": parseInt(quantity),
                         "recipeId": null,
                     }
                 )
@@ -84,16 +74,6 @@ class Cart {
         }
 
         await Promise.allSettled(promises);
-    }
-
-    // Generate sharable cart link
-    async generateCartLink() {
-        const productIds = await this.#retrieveItemsInCart();
-
-        const urlToShare = new URL('https://rohlik.cz');
-        urlToShare.searchParams.set('insertToCart', productIds);
-
-        return urlToShare;
     }
 
     // Delete appended parameter from URL and reload the page
