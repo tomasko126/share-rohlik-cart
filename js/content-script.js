@@ -1,19 +1,6 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'getCartContent') {
-        // We have to wrap the await method in the anon. fn,
-        // in order to have async messaging working
-        (async () => {
-            const products = await Cart.getInstance().retrieveProductsInCart();
-            sendResponse(products);
-        })();
-    }
-
-    return true;
-});
-
 class Cart {
     static #cart = null;
-    static #ROHLIK_URL = 'https://www.rohlik.cz/services/frontend-service/v2/cart';
+    static #ROHLIK_API_ENDPOINT = 'https://www.rohlik.cz/services/frontend-service/v2/cart';
 
     static getInstance() {
         if (!this.#cart) {
@@ -25,7 +12,7 @@ class Cart {
 
     // Retrieve products in cart by fetching the API
     async retrieveProductsInCart() {
-        const response = await fetch(Cart.#ROHLIK_URL);
+        const response = await fetch(Cart.#ROHLIK_API_ENDPOINT);
 
         if (!response.ok) {
             throw new Error('Unable to load cart!');
@@ -55,7 +42,7 @@ class Cart {
         const promises = [];
 
         for (const [prodId, quantity] of Object.entries(products)) {
-            const request = await fetch(Cart.#ROHLIK_URL, {
+            const request = await fetch(Cart.#ROHLIK_API_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -85,6 +72,20 @@ class Cart {
         location.href = url.href;
     }
 }
+
+// Attach message listener
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'getCartContent') {
+        // We have to wrap the await method in the anon. fn,
+        // in order to have async messaging working
+        (async () => {
+            const products = await Cart.getInstance().retrieveProductsInCart();
+            sendResponse(products);
+        })();
+    }
+
+    return true;
+});
 
 // Onload handler
 window.onload = async () => {
