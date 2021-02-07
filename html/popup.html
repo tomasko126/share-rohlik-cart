@@ -1,7 +1,22 @@
 <!DOCTYPE html>
 <html>
-    <body>
-        <button id='generateLink'>Generate shareable link</button>
-        <script src="/js/popup.js"></script>
-    </body>
+
+<head>
+    <link rel="stylesheet" href="../css/popup.css">
+    </link>
+</head>
+
+<body>
+    <article>
+        <ol id="list">
+            <p id="loading">Loading...</p>
+            <p id="noproductsincart">You have no products in cart yet</p>
+            <p id="switchtotab">Please, switch to Rohlik.cz tab if you want to share your cart or reload the current tab if you are at Rohlik.cz site</p>
+        </ol>
+        <button id='generateLink' disabled>Generate shareable link</button>
+        <p id="copiedtoclipboard">Link has been copied to your clipboard!</p>
+    </article>
+    <script src="/js/popup.js"></script>
+</body>
+
 </html>

@@ -1,0 +1,47 @@
+html {
+    width: 300px;
+}
+
+article {
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    margin: 0;
+}
+
+#noproductsincart, #switchtotab, #copiedtoclipboard {
+    display: none;
+    text-align: center;
+}
+
+.product {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.productname {
+    white-space: nowrap;
+    width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+}
+
+.countinput {
+    width: 35px;
+}
+
+ol {
+    padding: 0;
+}
+
+li {
+    list-style-type: none;
+}
+
+#copiedtoclipboard {
+    margin: 0;
+}

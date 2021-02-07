@@ -1,7 +1,5 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'generateLink') {
-        // We have to wrap the await method in the anon. fn,
-        // in order to have async messaging working
+    if (message.action === 'getCartContent') {
         (async () => {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
@@ -9,7 +7,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 return;
             }
 
-            chrome.tabs.sendMessage(tab.id, { action: 'generateLink' }, (response) => {
+            chrome.tabs.sendMessage(tab.id, { action: 'getCartContent' }, (response) => {
                 sendResponse(response);
             });
         })();
