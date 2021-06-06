@@ -125,7 +125,7 @@ class Popup {
             </span>
             <span>
                 <label for="${productId}-count">Count:</label>
-                <input type="number" id="${productId}-count" name="${productId}-count" class="countinput" min="0" max="${product?.maxBasketAmount}" value="${product?.quantity}">
+                <input type="number" id="${productId}-count" name="${productId}-count" class="countinput" min="0" value="${product?.quantity}">
             </span>
         `
 
